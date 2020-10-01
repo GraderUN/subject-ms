@@ -13,19 +13,15 @@ use super::schema::*;
 use diesel::prelude::*;
 use rocket_contrib::json::{Json, JsonValue};
 
-#[get("/subject")]
-pub fn get_subjects(db: super::MysqlDB) -> Json<Vec<Subject>> {
-    //! "The get subjects path"
-    Json(
-        subject::table
-            .load::<Subject>(&*db)
-            .expect("GET Subjects ERROR"),
-    )
-    // if let Ok(r) = subject::table.load(&*db) {
-    //     return r;
-    // } else {
-    //     return Json(json!());
-    // }
+#[get("/subjects")]
+pub fn get_subjects(db: super::MysqlDB) -> JsonValue {
+    let response = subject::table.load::<Subject>(&*db);
+
+    if let Ok(rows) = response {
+        json!(rows)
+    } else {
+        json_error("GET /subjects")
+    }
 }
 
 #[get("/subject/<id>")]
@@ -37,8 +33,7 @@ pub fn get_subject(db: super::MysqlDB, id: u32) -> JsonValue {
     if let Ok(rows) = response {
         json!(rows[0])
     } else {
-        json!({"response" : "Error completing request",
-            "path":"GET /subject/id"})
+        json_error("GET /subject/id")
     }
 }
 
@@ -49,23 +44,18 @@ pub fn post_subject(db: super::MysqlDB, subject: Json<PostSubject>) -> JsonValue
         .execute(&*db);
 
     if let Ok(rows) = response {
-        json!({"rows": rows,
-            "response" : "Success",
-            "path":"POST /subject/id"})
+        json_success(rows, "POST /subject/id")
     } else {
-        json!({"response" : "Error completing request",
-            "path":"POST /subject/id"})
+        json_error("POST /subject/id")
     }
 }
 
 #[put("/subject/<id>")]
 pub fn put_subject(db: super::MysqlDB, id: u32) -> () {
-    //! "PUT a subject"
 }
 
 #[delete("/subject/<id>")]
 pub fn delete_subject(db: super::MysqlDB, id: u32) -> () {
-    //! "DELETE a subject"
 }
 
 pub mod content {
@@ -92,3 +82,22 @@ pub mod content {
 }
 
 pub mod teacher {}
+
+fn json_success(rows: usize, path: &str) -> JsonValue {
+    json!(
+        {
+            "rows": rows,
+            "response" : "Success",
+            "path": path,
+        }
+    )
+}
+
+fn json_error(path: &str) -> JsonValue {
+    json!(
+        {
+            "response" : "Error completing DB request",
+            "path": path,
+        }
+    )
+}
