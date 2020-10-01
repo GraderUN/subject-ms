@@ -3,12 +3,16 @@
 extern crate rocket;
 #[macro_use]
 extern crate rocket_contrib;
-use rocket_contrib::databases::diesel;
+#[macro_use]
+extern crate diesel;
+//use rocket_contrib::databases::diesel;
+pub mod models;
+pub mod schema;
 
-mod subject;
+mod routes;
 
 #[database("mysql_db")]
-struct MysqlDB(diesel::MysqlConnection);
+pub struct MysqlDB(diesel::MysqlConnection);
 
 #[get("/")]
 fn index() -> &'static str {
@@ -22,15 +26,15 @@ fn main() {
             "/",
             routes![
                 index,
-                subject::get_subjects,
-                subject::get_subject,
-                subject::post_subject,
-                subject::put_subject,
-                subject::delete_subject,
-                subject::content::get_content,
-                subject::content::post_content,
-                subject::content::put_content,
-                subject::content::delete_content
+                routes::get_subjects,
+                routes::get_subject,
+                routes::post_subject,
+                routes::put_subject,
+                routes::delete_subject,
+                routes::content::get_content,
+                routes::content::post_content,
+                routes::content::put_content,
+                routes::content::delete_content
             ],
         )
         .launch();
