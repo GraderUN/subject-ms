@@ -1,5 +1,5 @@
-use serde::{Serialize, Deserialize};
 use super::schema::*;
+use serde::{Deserialize, Serialize};
 
 #[derive(Queryable, Serialize)]
 pub struct Subject {
@@ -17,8 +17,15 @@ pub struct SubjectGet {
 }
 
 #[derive(Insertable, AsChangeset, Deserialize)]
-#[table_name="subject"]
+#[table_name = "subject"]
 pub struct SubjectPost {
     pub name: String,
     pub grade: i32,
+}
+
+#[derive(Queryable, Insertable, Serialize, Deserialize)]
+#[table_name = "teacher"]
+pub struct Teacher {
+    pub id_teacher: u32,
+    pub id_subject: u32,
 }
