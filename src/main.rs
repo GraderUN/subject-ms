@@ -33,8 +33,10 @@ fn main() {
                 routes::subject::delete_subject,
                 routes::content::get_content,
                 routes::content::put_content,
-                //content::post_content,
-                //content::delete_content
+                routes::teacher::post_teacher,
+                routes::teacher::delete_teacher,
+                routes::teacher::get_teacher_subjects,
+                routes::teacher::get_subject_teachers,
             ],
         )
         .launch();
