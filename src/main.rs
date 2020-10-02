@@ -26,15 +26,15 @@ fn main() {
             "/",
             routes![
                 index,
-                routes::get_subjects,
-                routes::get_subject,
-                routes::post_subject,
-                routes::put_subject,
-                routes::delete_subject,
+                routes::subject::get_subjects,
+                routes::subject::get_subject,
+                routes::subject::post_subject,
+                routes::subject::put_subject,
+                routes::subject::delete_subject,
                 routes::content::get_content,
-                routes::content::post_content,
                 routes::content::put_content,
-                routes::content::delete_content
+                //content::post_content,
+                //content::delete_content
             ],
         )
         .launch();

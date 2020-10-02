@@ -9,9 +9,16 @@ pub struct Subject {
     pub content: Option<String>,
 }
 
-#[derive(Insertable, Deserialize)]
+#[derive(Queryable, Serialize)]
+pub struct SubjectGet {
+    pub id: u32,
+    pub name: String,
+    pub grade: Option<i32>,
+}
+
+#[derive(Insertable, AsChangeset, Deserialize)]
 #[table_name="subject"]
-pub struct PostSubject {
+pub struct SubjectPost {
     pub name: String,
     pub grade: i32,
 }
