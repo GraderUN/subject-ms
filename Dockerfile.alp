@@ -1,0 +1,15 @@
+FROM rustlang/rust:nightly-slim as builder
+RUN apt update && apt-get install default-libmysqlclient-dev -y
+RUN rustup target add --toolchain nightly x86_64-unknown-linux-musl
+
+WORKDIR /subject-ms
+COPY Cargo.* ./
+COPY src src
+RUN cargo build --release --target x86_64-unknown-linux-musl
+
+FROM alpine:latest
+RUN apk add mysql-client
+#RUN apk -U upgrade 
+COPY --from=builder /subject-ms/target/x86_64-unknown-linux-musl/release/subject-ms .
+COPY Rocket.toml .
+CMD ./subject-ms
