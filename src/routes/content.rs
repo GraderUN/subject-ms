@@ -6,7 +6,7 @@ use std::io::Read;
 use super::*;
 use crate::models::*;
 use crate::schema::subject;
-static LIMIT: u64 = 16000;
+const LIMIT: usize = 16000;
 
 #[get("/subject/<id>/content")]
 pub fn get_content(db: crate::MysqlDB, id: u32) -> JsonValue {
@@ -16,9 +16,11 @@ pub fn get_content(db: crate::MysqlDB, id: u32) -> JsonValue {
 
 #[put("/subject/<id>/content", data = "<data>")]
 pub fn put_content(db: crate::MysqlDB, id: u32, data: Data) -> JsonValue {
-    let stream: &mut [u8] = &mut [];
-    if let Ok(_n) = data.open().take(LIMIT).read(stream) {
-        let text = String::from_utf8_lossy(stream);
+    let mut stream = [0; LIMIT];
+
+    if let Ok(n) = data.open().take(LIMIT as u64).read(&mut stream) {
+        let text = String::from_utf8_lossy(&stream[0..n]);
+
         let response = diesel::update(subject::table.find(id))
             .set(subject::content.eq(text))
             .execute(&*db);
