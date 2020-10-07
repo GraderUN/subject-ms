@@ -1,6 +1,5 @@
 FROM rustlang/rust:nightly-slim as builder
-RUN apt update && apt-get install default-libmysqlclient-dev -y
-RUN rustup target add --toolchain nightly x86_64-unknown-linux-musl
+RUN apt update && apt install default-libmysqlclient-dev -y
 
 WORKDIR /subject-ms
 COPY Cargo.* ./
@@ -8,7 +7,8 @@ COPY src src
 RUN cargo build --release
 
 FROM debian:stable-slim
-RUN apt-get update && apt-get install default-libmysqlclient-dev -y
+RUN apt update && apt install default-libmysqlclient-dev -y
+EXPOSE 4000
 
 COPY --from=builder /subject-ms/target/release/subject-ms .
 COPY Rocket.toml .
