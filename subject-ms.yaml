@@ -1,0 +1,271 @@
+swagger: '2.0'
+info:
+  description: 'This is the subject microservice, part of Grader.'
+  version: '0.1.0'
+  title: 'subject-ms'
+  license:
+    name: 'MIT License'
+    url: 'https://mit-license.org'
+# host: 'instance.amazonaws.com'
+basePath: '/'
+tags:
+- name: 'subject'
+  description: 'Subject management'
+- name: 'content'
+  description: 'Edit and query subject contents'
+- name: 'teacher'
+  description: 'Assign subjects to teachers and query relationships'
+schemes:
+- 'http'
+paths:
+  /subject:
+    get:
+      tags:
+      - 'subject'
+      summary: 'Fetch all subjects'
+      consumes:
+      - 'application/json'
+      produces:
+      - 'application/json'
+      responses:
+        '200':
+          description: 'Array of all subjects'
+          schema:
+            type: 'array'
+            items:
+              $ref: '#/definitions/SubjectNoContent'
+    post:
+      tags:
+      - 'subject'
+      summary: 'Add a Subject'
+      consumes:
+      - 'application/json'
+      produces:
+      - 'application/json'
+      parameters:
+      - in: 'body'
+        name: 'body'
+        required: true
+        schema:
+          $ref: '#/definitions/SubjectIn'
+      responses:
+        '200':
+          description: 'Object indicating success or error of the operation'
+          schema:
+            $ref: '#/definitions/SubjectResponse'
+  /subject/{id}:
+    get:
+      tags:
+      - 'subject'
+      summary: 'Fetch a Subject'
+      consumes:
+      - 'application/json'
+      produces:
+      - 'application/json'
+      parameters:
+      - name: 'id'
+        in: 'path'
+        required: true
+        type: 'integer'
+      responses:
+        '200':
+          description: 'Subject object without content'
+          schema:
+            $ref: '#/definitions/SubjectIn'
+    put:
+      tags:
+      - 'subject'
+      summary: 'Update a Subject'
+      consumes:
+      - 'application/json'
+      produces:
+      - 'application/json'
+      parameters:
+      - name: 'id'
+        in: 'path'
+        required: true
+        type: 'integer'
+      - in: 'body'
+        name: 'body'
+        required: true
+        schema:
+          $ref: '#/definitions/SubjectIn'
+      responses:
+        '200':
+          description: 'Object indicating success or error of the operation'
+          schema:
+            $ref: '#/definitions/SubjectResponse'
+  /subject/{id}/content:
+    get:
+      tags:
+      - 'content'
+      summary: 'Fetch a Subject with its contents'
+      consumes:
+      - 'application/json'
+      produces:
+      - 'application/json'
+      parameters:
+      - name: 'id'
+        in: 'path'
+        required: true
+        type: 'integer'
+      responses:
+        '200':
+          description: 'Subject object with content'
+          schema:
+            $ref: '#/definitions/Subject'
+    put:
+      tags:
+      - 'content'
+      summary: 'Change the content of a Subject'
+      consumes:
+      - 'text/plain'
+      produces:
+      - 'application/json'
+      parameters:
+      - name: 'id'
+        in: 'path'
+        required: true
+        type: 'integer'
+      - in: 'query'
+        name: 'content'
+        required: true
+        type: 'string'
+      responses:
+        '200':
+          description: 'Object indicating success or error of the operation'
+          schema:
+            $ref: '#/definitions/SubjectResponse'
+  /teacher:
+    post:
+      tags:
+      - 'teacher'
+      summary: 'Add a Teacher-Subject pair'
+      consumes:
+      - 'application/json'
+      produces:
+      - 'application/json'
+      parameters:
+      - name: 'teacher'
+        in: 'body'
+        required: true
+        schema:
+          $ref: '#/definitions/Teacher'
+      responses:
+        '200':
+          description: 'Object indicating success or error of the operation'
+          schema:
+            $ref: '#/definitions/SubjectResponse'
+    delete:
+      tags:
+      - 'teacher'
+      summary: 'Remove a Teacher-Subject pair'
+      consumes:
+      - 'application/json'
+      produces:
+      - 'application/json'
+      responses:
+        '200':
+          description: 'Object indicating success or error of the operation'
+          schema:
+            $ref: '#/definitions/SubjectResponse'
+  /teacher/{id}:
+    get:
+      tags:
+      - 'teacher'
+      summary: 'Get Subjects assigned to a Teacher'
+      consumes:
+      - 'application/json'
+      produces:
+      - 'application/json'
+      parameters:
+      - name: 'id'
+        in: 'path'
+        required: true
+        type: 'integer'
+      responses:
+        '200':
+          description: 'Array of id_teacher and id_subject pairs'
+          schema:
+            type: 'array'
+            items: 
+              $ref: '#/definitions/Teacher'
+  /subject/{id}/teacher:
+    get:
+      tags:
+      - 'teacher'
+      summary: 'Get Teachers assigned to a Subject'
+      consumes:
+      - 'application/json'
+      produces:
+      - 'application/json'
+      parameters:
+      - name: 'id'
+        in: 'path'
+        required: true
+        type: 'integer'
+      responses:
+        '200':
+          description: 'Array of id_teacher and id_subject pairs'
+          schema:
+            type: 'array'
+            items: 
+              $ref: '#/definitions/Teacher'
+
+definitions:
+  Subject:
+    type: 'object'
+    properties:
+      id:
+        type: 'integer'
+      name:
+        type: 'string'
+      grade:
+        type: 'integer'
+      content:
+        type: 'string'
+        format: 'text'
+  SubjectIn:
+    type: 'object'
+    required:
+    - 'name'
+    - 'grade'
+    properties:
+      name:
+        type: 'string'
+      grade:
+        type: 'integer'
+  SubjectNoContent:
+    type: 'object'
+    properties:
+      id:
+        type: 'integer'
+      name:
+        type: 'string'
+      grade:
+        type: 'integer'
+  Teacher:
+    type: 'object'
+    required:
+    - 'id_subject'
+    - 'id_teacher'
+    properties:
+      id_subject:
+        type: 'integer'
+      id_teacher:
+        type: 'integer'
+  SubjectResponse:
+    type: 'object'
+    properties:
+      rows:
+        type: 'integer'
+      response:
+        type: 'string'
+        enum:
+        - 'Success'
+        - 'Error'
+      path:
+        type: 'string'
+externalDocs:
+  description: 'Source code on GitHub'
+  url: 'https://github.com/GraderUN/subject-ms'
