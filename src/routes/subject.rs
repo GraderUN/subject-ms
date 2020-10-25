@@ -22,6 +22,15 @@ pub fn get_subject(db: crate::MysqlDB, id: u32) -> JsonValue {
     json_get(response, "GET /subject/id")
 }
 
+#[get("/grade/<id>")]
+pub fn get_grade(db: crate::MysqlDB, id: i32) -> JsonValue {
+    let response = subject::table
+        .select((subject::id, subject::name, subject::grade))
+        .filter(subject::grade.eq(id))
+        .load::<SubjectGet>(&*db);
+    json_get(response, "GET /subject/id")
+}
+
 #[post("/subject", data = "<subject>")]
 pub fn post_subject(db: crate::MysqlDB, subject: Json<SubjectPost>) -> JsonValue {
     let response = diesel::insert_into(subject::table)

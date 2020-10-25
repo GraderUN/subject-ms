@@ -28,6 +28,7 @@ fn main() {
                 index,
                 routes::subject::get_subjects,
                 routes::subject::get_subject,
+                routes::subject::get_grade,
                 routes::subject::post_subject,
                 routes::subject::put_subject,
                 routes::subject::delete_subject,
