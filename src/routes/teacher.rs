@@ -29,9 +29,8 @@ pub fn post_teacher(db: crate::MysqlDB, data: Json<Teacher>) -> JsonValue {
     json_execute(response, "POST /teacher")
 }
 
-#[delete("/teacher", data = "<data>")]
-pub fn delete_teacher(db: crate::MysqlDB, data: Json<Teacher>) -> JsonValue {
-    let response =
-        diesel::delete(teacher::table.find((data.id_teacher, data.id_subject))).execute(&*db);
+#[delete("/teacher?<id_teacher>&<id_subject>")] // , data = "<data>")]
+pub fn delete_teacher(db: crate::MysqlDB, id_teacher: u32, id_subject: u32) -> JsonValue {
+    let response = diesel::delete(teacher::table.find((id_teacher, id_subject))).execute(&*db);
     json_execute(response, "DELETE /teacher")
 }
